@@ -7,7 +7,7 @@ from keyboards.menu_kb import menu_kb
 
 router = Router()
 
-@router.message(Command("/menu"))
+@router.message(Command("menu"))
 async def cmd_start(message: Message):
     await message.answer(
         text = "Выберите действие",

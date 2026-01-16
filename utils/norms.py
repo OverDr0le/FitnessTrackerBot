@@ -1,7 +1,4 @@
-import aiohttp
-from configs.config_reader import config
-
-WEATHER_API = config.weather_api.get_secret_value()
+from utils.city_temp import get_city_temp
 
 def calories_norm(weight:int, height:int, age:int, sex:str):
     '''
@@ -21,14 +18,14 @@ def calories_norm(weight:int, height:int, age:int, sex:str):
     '''
     try:
         if age == 'Мужчина':
-            return 10*weight+6.25*height-5*age+5
+            return int(10*weight+6.25*height-5*age+5)
         else:
-            return 10*weight+6.25*height-5*age - 161
+            return int(10*weight+6.25*height-5*age - 161)
     except Exception as e:
         print(f"Ошибка расчёта нормы калорий {e}")
         return None
 
-async def water_norm(weight:int, height:int, city:str):
+async def water_norm(weight:int, height:int, city:str | None):
     '''
     Расчёт нормы расхода воды без учёта активностей
 
@@ -43,21 +40,12 @@ async def water_norm(weight:int, height:int, city:str):
 
     return value: int, количесиво мл воды
     '''
-
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={WEATHER_API}&units=metric"
-    
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                data = await response.json()
-                temperature = data['main']['temp']
-                if temperature > 25:
-                    return weight*30 + 500
-                else:
-                    return weight*30
-            else:
-                print("Ошбика в запросе температуры")
-                return weight*30
+    if city:
+        temperature = await get_city_temp(city)
+        if temperature > 25:
+            return weight*30 + 500
+    else:
+        return weight*30
 
 
             

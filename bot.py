@@ -3,17 +3,20 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from configs.config_reader import config
-from handlers import common
+from handlers import common,menu,profile,change_calories
 
 
 
 async def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher()
 
     dp.include_routers(
-        common.router
+        common.router,
+        menu.router,
+        profile.router,
+        change_calories.router
     )
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
