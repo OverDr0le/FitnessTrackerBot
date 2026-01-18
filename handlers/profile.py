@@ -7,9 +7,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 from aiogram.utils.formatting import Bold, Text, as_marked_section, as_list
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from filters.profile_filter import IsNumberInRange, CityFilter
 from keyboards.profile_kb import male_female_kb
-from utils.norms import calories_norm
+from utils.norms import calories_norm, water_norm
 
 router = Router()
 
@@ -26,7 +28,7 @@ class SetProfile(StatesGroup):
 async def start_profile_edit(message, state: FSMContext) -> None:
     await state.clear()
     await message.answer(
-        text="Введите ваш рост в **см**:", parse_mode=ParseMode.MARKDOWN_V2
+        text="Введите ваш рост в *см*:", parse_mode=ParseMode.MARKDOWN_V2
     )
     await state.set_state(SetProfile.set_height)
 
@@ -104,7 +106,7 @@ async def incorrect_sex(message: Message) -> None:
 
 
 @router.message(SetProfile.set_city, CityFilter())
-async def process_city(message: Message, state: FSMContext) -> None:
+async def process_city(message: Message, state: FSMContext, session: AsyncSession) -> None:
     await state.update_data(set_city=message.text)
     data: Dict[str, Any] = await state.get_data()
     norm_ccal: int | None = calories_norm(
@@ -113,6 +115,12 @@ async def process_city(message: Message, state: FSMContext) -> None:
         age=data["set_age"],
         sex=data["set_sex"],
     )
+    norm_water: int | None = await water_norm(
+        weight= data["set_weight"],
+        height=data["set_height"],
+        city = data["set_city"]
+    )
+
     text: Text = as_list(
         Bold("Отлично! Характеристики успешно заполнены."),
         as_marked_section(
