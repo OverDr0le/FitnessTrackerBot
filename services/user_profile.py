@@ -52,18 +52,16 @@ class UserProfile:
 
 
 
-    # Метод для добавления воды\калорий от еды\сожжёных калорий
-    async def increment(
+    # Метод для изменения чего угодно: цели по калориям, по воде и тд
+    async def change(
             self,
             telegram_id: int,
             field: str,
-            value: int
+            value: int | str
     ):
-        stats = await self.get_today(telegram_id)
-
-        current = getattr(stats, field)
-        setattr(stats, field, current+ value)
-
+        user_profile = await self.get_profile(telegram_id)
+        setattr(user_profile, field, value)
+        
         await self.session.commit()
 
-        return stats
+        return user_profile
