@@ -9,7 +9,7 @@ from aiogram.utils.formatting import Bold, Text, as_marked_section, as_list
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_save_user
+from services.user_profile import UserProfile
 from filters.profile_filter import IsNumberInRange, CityFilter
 from keyboards.profile_kb import male_female_kb
 from utils.norms import calories_norm, water_norm
@@ -126,7 +126,8 @@ async def process_city(message: Message, state: FSMContext, session: AsyncSessio
     data["water_goal"] = norm_water
     
     try:
-        await orm_save_user(session,data)
+        user = UserProfile(session=session)
+        await user.save_profile(data)
         text: Text = as_list(
             Bold("Отлично! Характеристики успешно изменены."),
             as_marked_section(
