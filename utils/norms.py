@@ -42,7 +42,7 @@ async def water_norm(weight:int, height:int, city:str | None):
     '''
     if city:
         temperature = await get_city_temp(city)
-        if temperature > 25:
+        if temperature and temperature > 25:
             return weight*30 + 500
     else:
         return weight*30

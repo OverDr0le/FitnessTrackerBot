@@ -1,4 +1,4 @@
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 from aiogram import Router,F
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
@@ -22,12 +22,12 @@ async def start_calories_edit(message, state: FSMContext) -> None:
     await state.set_state(CaloriesState.calories_goal)
 
 
-@router.message(Command("change_caloriesgoal"))
+@router.message(Command("change_caloriesgoal"), StateFilter(None))
 async def calories_edit_cmd(message: Message, state: FSMContext) -> None:
     await start_calories_edit(message=message,state=state)
 
 
-@router.callback_query(F.data == "set_calories_goal")
+@router.callback_query(F.data == "set_calories_goal", StateFilter(None))
 async def calories_edit_callback(callback: CallbackQuery, state: FSMContext) -> None:
     await start_calories_edit(callback.message,state)
     await callback.answer()
@@ -38,6 +38,7 @@ async def process_calories(message: Message, state: FSMContext):
     await state.update_data(calories_goal = int(message.text))
     data = await state.get_data()
     await message.answer(text=f"Ваша норма калорий была изменена.\nВаша норма: {data["calories_goal"]} ккал")
+    await state.clear()
 
 @router.message(CaloriesState.calories_goal)
 async def incorrect_calories(message: Message):
