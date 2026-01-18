@@ -1,9 +1,10 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Integer, BigInteger, String, DateTime, UniqueConstraint, func, ForeignKey
+from sqlalchemy import Integer, BigInteger, String, Date, UniqueConstraint, func, ForeignKey
+from datetime import date
+
 
 class Base(DeclarativeBase):
-    created_at: Mapped[DateTime] = mapped_column(DateTime, default= func.now())
-    updated_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(),onupdate=func.now())
+    date: Mapped[date] = mapped_column(Date, server_default= func.current_date())
 
 class User(Base):
     __tablename__='users'
