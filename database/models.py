@@ -14,6 +14,9 @@ class User(Base):
     sex: Mapped[str] = mapped_column(String(50), nullable=False)
     age: Mapped[int] = mapped_column(Integer, nullable = False)
     city: Mapped[str] = mapped_column(String(50), nullable = False)
+    calories_goal: Mapped[int] = mapped_column(Integer, nullable= False)
+    water_goal: Mapped[int] = mapped_column(Integer,nullable=False)
+    
     daily_stats: Mapped[list["UserDailyStats"]] = relationship(
         back_populates = "user",
         cascade = "all, delete-orphan"
@@ -22,13 +25,11 @@ class User(Base):
 class UserDailyStats(Base):
     __tablename__ = "user_daily_stats"
 
+    id: Mapped[int] = mapped_column(Integer,primary_key = True, autoincrement=True)
     telegram_id: Mapped[int] = mapped_column(
         ForeignKey("users.telegram_id", ondelete="CASCADE"),
-        nullable=False,
-        primary_key=True
+        nullable=False
     )
-    calories_goal: Mapped[int] = mapped_column(Integer, nullable= False)
-    water_goal: Mapped[int] = mapped_column(Integer,nullable=False)
     calories_consumed: Mapped[int] = mapped_column(Integer,default = 0)
     calories_burned: Mapped[int] = mapped_column(Integer, default = 0)
     water_consumed: Mapped[int] = mapped_column(Integer, default = 0)

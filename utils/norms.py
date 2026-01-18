@@ -25,7 +25,7 @@ def calories_norm(weight:int, height:int, age:int, sex:str):
         print(f"Ошибка расчёта нормы калорий {e}")
         return None
 
-async def water_norm(weight:int, height:int, city:str | None):
+async def water_norm(weight:int, height:int, city:str):
     '''
     Расчёт нормы расхода воды без учёта активностей
 
@@ -40,12 +40,10 @@ async def water_norm(weight:int, height:int, city:str | None):
 
     return value: int, количесиво мл воды
     '''
-    if city:
-        temperature = await get_city_temp(city)
-        if temperature and temperature > 25:
-            return weight*30 + 500
-    else:
-        return weight*30
+    temperature = await get_city_temp(city)
+    if temperature and temperature > 25:
+        return weight*30 + 500
+    return weight*30
 
 
             

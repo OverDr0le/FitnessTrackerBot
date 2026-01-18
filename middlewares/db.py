@@ -20,8 +20,12 @@ class DataBaseSession(BaseMiddleware):
         data: Dict[str, Any]
     ):
         async with self.session_factory() as session:
-            data["session"] = session
-            return await handler(event,data)
+            try:
+                data["session"] = session
+                return await handler(event,data)
+            finally:
+                await session.close()
+                
         
     
 class DbUserRequiered(BaseMiddleware):

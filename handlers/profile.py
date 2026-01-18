@@ -9,6 +9,7 @@ from aiogram.utils.formatting import Bold, Text, as_marked_section, as_list
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.orm_query import orm_save_user
 from filters.profile_filter import IsNumberInRange, CityFilter
 from keyboards.profile_kb import male_female_kb
 from utils.norms import calories_norm, water_norm
@@ -120,22 +121,32 @@ async def process_city(message: Message, state: FSMContext, session: AsyncSessio
         height=data["set_height"],
         city = data["set_city"]
     )
-
-    text: Text = as_list(
-        Bold("Отлично! Характеристики успешно заполнены."),
-        as_marked_section(
-            f"Рост: {data["set_height"]} см",
-            f"Вес: {data["set_weight"]} кг",
-            f"Пол: {data["set_sex"]}",
-            f"Возраст: {data['set_age']}",
-            f"Населённый пункт: {data["set_city"]}",
-            marker="-",
-        ),
-        f"Рекомендуемая норма ккал: {norm_ccal}\nВы можете установить норму самостоятельно при помощи /change_caloriesgoal",
-        sep="\n\n",
-    )
-    await message.answer(**text.as_kwargs())
-    await state.clear()
+    data["telegram_id"] = message.from_user.id
+    data["calories_goal"] = norm_ccal
+    data["water_goal"] = norm_water
+    
+    try:
+        await orm_save_user(session,data)
+        text: Text = as_list(
+            Bold("Отлично! Характеристики успешно изменены."),
+            as_marked_section(
+                f"Рост: {data["set_height"]} см",
+                f"Вес: {data["set_weight"]} кг",
+                f"Пол: {data["set_sex"]}",
+                f"Возраст: {data['set_age']}",
+                f"Населённый пункт: {data["set_city"]}",
+                marker="-",
+            ),
+            f"Рекомендуемая дневная норма ккал: {norm_ccal} ккал\nДневная норма воды: {norm_water} мл\nВы можете установить норму самостоятельно при помощи /change_caloriesgoal",
+            sep="\n\n",
+        )
+        await message.answer(**text.as_kwargs())
+        await state.clear()
+    except Exception as e:
+        await message.answer(
+            f"Ошибка: \n{str(e)}"
+        )
+        await state.clear()
 
 
 @router.message(SetProfile.set_city)
