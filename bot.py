@@ -34,6 +34,7 @@ async def main():
     
     profile.router.message.middleware(DataBaseSession(session_factory= session_maker))
     change_calories.router.message.middleware(DbUserRequiered(session_maker))
+    change_calories.router.callback_query.middleware(DbUserRequiered(session_maker))
 
 
     dp.include_routers(
