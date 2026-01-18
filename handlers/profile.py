@@ -144,8 +144,9 @@ async def process_city(message: Message, state: FSMContext, session: AsyncSessio
         await message.answer(**text.as_kwargs())
         await state.clear()
     except Exception as e:
+        print(f"Ошибка:\n{str(e)}")
         await message.answer(
-            f"Ошибка: \n{str(e)}"
+            f"Ошибка сохранения профиля"
         )
         await state.clear()
 
