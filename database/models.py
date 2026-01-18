@@ -40,5 +40,5 @@ class UserDailyStats(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint("telegram_id","created_at"),
+        UniqueConstraint("telegram_id","date"),
     )
