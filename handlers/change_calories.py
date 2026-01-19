@@ -48,13 +48,14 @@ async def process_calories(message: Message, state: FSMContext, session: AsyncSe
         )
 
         await message.answer(text=f"Ваша норма калорий была изменена.\nВаша норма: {data["calories_goal"]} ккал")
-        await state.clear()
 
     except Exception as e:
         print(f"Ошибка:\n{str(e)}")
         await message.answer(
             f"Ошибка изменения калорий"
         )
+        
+    finally:    
         await state.clear()
 
 @router.message(CaloriesState.calories_goal)

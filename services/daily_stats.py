@@ -3,6 +3,7 @@ from datetime import date
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from database.models import UserDailyStats
 
@@ -19,7 +20,7 @@ class OrmUserDailyStats:
             select(UserDailyStats).where(
                 UserDailyStats.telegram_id == telegram_id,
                 UserDailyStats.date == today
-            )
+            ).options(selectinload(UserDailyStats.user))
         )
         stats = result.scalar_one_or_none()
 
@@ -30,6 +31,8 @@ class OrmUserDailyStats:
             )
             self.session.add(stats)
             await self.session.flush()
+
+            await self.session.refresh(stats,["user"])
         
         return stats
         
@@ -45,6 +48,4 @@ class OrmUserDailyStats:
         current = getattr(stats, field)
         setattr(stats, field, current+ value)
 
-        await self.session.commit()
-
-        return stats
+        return stats # Не делаем коммит, иначе сессия закрывается и не вывести цель по калориям и воде при обновлении
