@@ -48,6 +48,7 @@ async def process_food_name(message, state: FSMContext, food_name:str) -> None:
         )
     else:
         await message.answer("Мне не известна такая еда 😔")
+        await state.clear()
         return
 
     await state.set_state(FoodLogState.grams)
