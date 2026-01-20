@@ -60,8 +60,8 @@ class DbUserRequiered(BaseMiddleware):
                 return # Не вызываем логгирование воды,еды,сожжёных тренировок и изменения цели по калориям
 
             # Пользователь есть
+            
             data["session"] = session
-            data["user"] = user
 
             return await handler(event, data)
 

@@ -27,7 +27,7 @@ async def add_water(message: Message, session: AsyncSession, ml: int):
 
         await session.commit()
 
-        await session.refresh(stats)
+        await session.refresh(stats, attribute_names=["user"])
 
         
         water_goal = stats.user.water_goal

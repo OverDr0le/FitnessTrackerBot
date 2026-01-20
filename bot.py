@@ -4,7 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from configs.config_reader import config
 from database.engine import create_db, drop_db, engine
-from handlers import common,menu,profile,change_calories, update_calories, update_water, update_activity
+from handlers import common,menu,profile,change_calories, update_calories, update_water, update_activity, progress_check
 from middlewares.db import DbUserRequiered, DataBaseSession
 from database.engine import session_maker
 
@@ -32,23 +32,17 @@ async def main():
     dp.shutdown.register(on_shutdown)
 
     
+    for router in (
+    change_calories.router,
+    update_calories.router,
+    update_water.router,
+    update_activity.router,
+    progress_check.router,  
+    ):
+        router.message.middleware(DbUserRequiered(session_maker))
+        router.callback_query.middleware(DbUserRequiered(session_maker))
+
     profile.router.message.middleware(DataBaseSession(session_factory= session_maker))
-
-    change_calories.router.message.middleware(DbUserRequiered(session_maker))
-    change_calories.router.callback_query.middleware(DbUserRequiered(session_maker))
-    change_calories.router.message.middleware(DataBaseSession(session_maker))
-
-    update_calories.router.message.middleware(DbUserRequiered(session_maker))
-    update_calories.router.callback_query.middleware(DbUserRequiered(session_maker))
-    update_calories.router.message.middleware(DataBaseSession(session_maker))
-
-    update_water.router.message.middleware(DbUserRequiered(session_maker))
-    update_water.router.callback_query.middleware(DbUserRequiered(session_maker))
-    update_water.router.message.middleware(DataBaseSession(session_maker))
-
-    update_activity.router.callback_query.middleware(DbUserRequiered(session_maker))
-    update_activity.router.message.middleware(DataBaseSession(session_maker))
-
 
     dp.include_routers(
         common.router,
@@ -57,6 +51,7 @@ async def main():
         update_calories.router,
         update_water.router,
         update_activity.router,
+        progress_check.router,
         change_calories.router
     )
     await bot.delete_webhook(drop_pending_updates=True)

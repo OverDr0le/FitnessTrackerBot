@@ -1,4 +1,3 @@
-from aiogram.filters.command import Command, CommandObject
 from aiogram.filters import StateFilter
 from aiogram import Router,F
 from aiogram.fsm.state import StatesGroup, State
@@ -70,7 +69,7 @@ async def final_process(message: Message, state:FSMContext, session: AsyncSessio
     data = await state.get_data()
     kcal_per_hour = activity_dict[data["activity_type"]]
     duration = data["duration_mnts"]
-    additional_water = 200*round(duration/30)
+    additional_water = 200*round(duration//30)
 
     try:
         user_stats = OrmUserDailyStats(session)
@@ -84,12 +83,6 @@ async def final_process(message: Message, state:FSMContext, session: AsyncSessio
             telegram_id= message.from_user.id,
             field = "calories_burned",
             value = burned_kcal
-        )
-
-        await user_stats.increment(
-            telegram_id= message.from_user.id,
-            field = "water_consumed",
-            value = -additional_water # Вычитаем воду, которая ушла на тренировку чтобы соблюдать баланс
         )
 
         await session.commit()
