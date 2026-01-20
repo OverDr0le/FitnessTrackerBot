@@ -35,7 +35,7 @@ async def on_shutdown(bot):
 
 
 
-async def main():
+async def start_pooling():
     logging.basicConfig(
     level=logging.WARNING
     )
@@ -74,9 +74,11 @@ async def main():
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
-
-if __name__ == "__main__":
+async def main():
     await asyncio.gather(
-        main(),
+        start_pooling(),
         asyncio.to_thread(run_http)
     )
+
+if __name__ == "__main__":
+    asyncio.run(main())
