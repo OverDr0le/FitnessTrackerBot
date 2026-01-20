@@ -6,6 +6,7 @@ from configs.config_reader import config
 from database.engine import create_db, drop_db, engine
 from handlers import common,menu,profile,change_calories, update_calories, update_water, update_activity, progress_check
 from middlewares.db import DbUserRequiered, DataBaseSession
+from middlewares.logging import LoggingMiddleware
 from database.engine import session_maker
 
 async def on_startup(bot):
@@ -24,13 +25,18 @@ async def on_shutdown(bot):
 
 
 async def main():
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+    level=logging.WARNING
+    )
+    logging.getLogger("middlewares.logging").setLevel(logging.INFO)
+
     bot = Bot(token=config.bot_token.get_secret_value())
     dp = Dispatcher()
 
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
+    dp.update.outer_middleware(LoggingMiddleware())
     
     for router in (
     change_calories.router,

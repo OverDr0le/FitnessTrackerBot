@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fitness_bot
+    container_name: fitness_bot
+    restart: always
+    env_file:
+      - .env
