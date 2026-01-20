@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     weather_api: SecretStr
     run_param: bool = False
     db_lite: SecretStr
+    port:int
 
     
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')

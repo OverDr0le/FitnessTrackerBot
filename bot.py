@@ -9,6 +9,17 @@ from middlewares.db import DbUserRequiered, DataBaseSession
 from middlewares.logging import LoggingMiddleware
 from database.engine import session_maker
 
+from aiohttp import web
+
+async def health(request):
+    return web.Response(text="OK")
+
+async def run_http():
+    app = web.Application()
+    app.router.add_get("/",health)
+
+    web.run_app(app,host="0.0.0.0",port = config.port)
+
 async def on_startup(bot):
     
     run_param = config.run_param
@@ -65,4 +76,7 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    await asyncio.gather(
+        main(),
+        asyncio.to_thread(run_http)
+    )
