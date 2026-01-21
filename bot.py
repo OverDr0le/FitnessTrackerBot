@@ -142,7 +142,7 @@ def main():
     setup_application(app,dp, bot = bot)
 
     # lifespan events
-    app._on_startup.append(lambda app: on_startup(bot))
+    app.on_startup.append(lambda app: on_startup(bot))
     app.on_shutdown.append(lambda app: on_shutdown(bot))
 
     # Запускаем веб-сервер
