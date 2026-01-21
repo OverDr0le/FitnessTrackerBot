@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from aiogram import Bot, Dispatcher
@@ -27,7 +28,7 @@ WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
 #Веб сервер настройки
 WEBAPP_HOST = config.WEBAPP_HOST
-WEBAPP_PORT = config.WEBAPP_PORT
+WEBAPP_PORT = int(os.getenv("PORT",config.WEBAPP_PORT))
 
 #Настройки создания БД
 RUN_PARAM = config.run_param
@@ -148,7 +149,7 @@ def main():
     logger.info("Starting web server...")
     web.run_app(
         app,
-        host = WEBHOOK_HOST,
+        host = WEBAPP_HOST,
         port = WEBAPP_PORT,
     )
 
