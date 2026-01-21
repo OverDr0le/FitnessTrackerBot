@@ -121,6 +121,10 @@ def main():
         progress_check.router,
         change_calories.router
     )
+
+    dp.startup.register(on_startup)
+    dp.shutdown.register(on_shutdown)
+    
     # Создаём aiohttp приложение
     app = web.Application()
 
@@ -141,9 +145,6 @@ def main():
     # Настраиваем приложение
     setup_application(app,dp, bot = bot)
 
-    # lifespan events
-    app.on_startup.append(lambda app: on_startup(bot))
-    app.on_shutdown.append(lambda app: on_shutdown(bot))
 
     # Запускаем веб-сервер
     logger.info("Starting web server...")
