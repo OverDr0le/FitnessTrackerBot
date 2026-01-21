@@ -7,7 +7,10 @@ class Settings(BaseSettings):
     weather_api: SecretStr
     run_param: bool = False
     db_lite: SecretStr
-    port:int
+    WEBHOOK_HOST: str
+    WEBHOOK_PATH: str
+    WEBAPP_HOST: str
+    WEBAPP_PORT: int
 
     
     model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8')
