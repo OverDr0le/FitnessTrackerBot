@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 #WebHook настройки
 WEBHOOK_HOST = config.WEBHOOK_HOST
 WEBHOOK_PATH = config.WEBHOOK_PATH
-WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+WEBHOOK_URL = os.getenv("WEBHOOK_URL",f"{WEBHOOK_HOST}{WEBHOOK_PATH}")
 
 #Веб сервер настройки
 WEBAPP_HOST = config.WEBAPP_HOST
